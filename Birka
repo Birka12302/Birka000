@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "mymalloc.h"
+
+void double_check_memory(int **ptrs, int *dc, int nptrs, int fl_size, int tbytes)
+{
+  void *low, *l;
+  void *high, *h;
+  int *ip, i;
+  int nbytes;
+  int nfl;
+
+  nbytes = 0;
+
+  for (i = 0; i < nptrs; i++) {
+    l = (void *) ptrs[i];
+    l -= 8;
+    ip = (int *) l;
+
+    if (*ip != dc[i]) {
+      printf("Error: pointer number %d the wrong size (%d instead of %d)\n", i, *ip, dc[i]);
+      exit(1);
+    }
+    h = l + *ip;
+    if (nbytes == 0 || l < low) low = l;
+    if (nbytes == 0 || h > high) high = h;
+    nbytes += *ip;
